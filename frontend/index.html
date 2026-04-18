@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlashMaster - Advanced Flashcard App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>FlashMaster</span>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn" onclick="showSection('home')">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('study')">
+                    <i class="fas fa-book"></i>
+                    <span>Study</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('quiz')">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Quiz</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('management')">
+                    <i class="fas fa-cog"></i>
+                    <span>Manage</span>
+                </button>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="sound-toggle" onclick="toggleSound()" title="Toggle Sound">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- HOME SECTION -->
+        <section id="home-section" class="section active">
+            <div class="hero">
+                <h1>Welcome to FlashMaster</h1>
+                <p>Master anything with smart, interactive flashcards</p>
+                <div class="hero-stats">
+                    <div class="stat-box">
+                        <strong id="totalCardsHome">0</strong>
+                        <span>Total Cards</span>
+                    </div>
+                    <div class="stat-box">
+                        <strong id="totalCategoriesHome">0</strong>
+                        <span>Categories</span>
+                    </div>
+                    <div class="stat-box">
+                        <strong id="accuracyHome">0%</strong>
+                        <span>Accuracy</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <button class="btn-primary" onclick="showSection('study')">
+                        <i class="fas fa-play"></i> Start Studying
+                    </button>
+                    <button class="btn-secondary" onclick="showSection('management')">
+                        <i class="fas fa-plus"></i> Add Cards
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STUDY SECTION -->
+        <section id="study-section" class="section">
+            <div class="study-container">
+                <!-- Sidebar Controls -->
+                <aside class="study-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Filter</h3>
+                        <input 
+                            type="text" 
+                            id="searchCards" 
+                            class="search-input" 
+                            placeholder="Search cards..."
+                            onkeyup="filterStudyCards()"
+                        >
+                        <select id="categoryFilter" class="select-input" onchange="filterStudyCards()">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Mode</h3>
+                        <button 
+                            class="btn-mode active" 
+                            onclick="setStudyMode('normal')"
+                            id="modeNormal"
+                        >
+                            <i class="fas fa-graduation-cap"></i> Normal
+                        </button>
+                        <button 
+                            class="btn-mode" 
+                            onclick="setStudyMode('shuffle')"
+                            id="modeShuffle"
+                        >
+                            <i class="fas fa-random"></i> Shuffle
+                        </button>
+                        <button 
+                            class="btn-mode" 
+                            onclick="setStudyMode('auto')"
+                            id="modeAuto"
+                        >
+                            <i class="fas fa-play-circle"></i> Auto-Play
+                        </button>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Auto-Play Speed</h3>
+                        <input 
+                            type="range" 
+                            id="autoSpeed" 
+                            min="1" 
+                            max="10" 
+                            value="5" 
+                            class="slider"
+                            oninput="updateAutoSpeed(this.value)"
+                        >
+                        <span id="speedDisplay">5s</span>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Stats</h3>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Overall Progress</span>
+                                <span id="progressPercent">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="studyProgress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Study Area -->
+                <div class="study-main">
+                    <!-- Card Display -->
+                    <div class="card-display-container">
+                        <div class="card-header">
+                            <span class="card-counter">
+                                <span id="currentCard">1</span> / <span id="totalCards">0</span>
+                            </span>
+                            <div class="card-actions">
+                                <button class="icon-btn" onclick="markLiked()" title="Mark as liked">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                                <button class="icon-btn" onclick="reportCard()" title="Report issue">
+                                    <i class="fas fa-flag"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flashcard" id="flashcard">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <div class="card-label">Question</div>
+                                    <p id="questionText">Loading...</p>
+                                </div>
+                                <div class="card-back">
+                                    <div class="card-label">Answer</div>
+                                    <p id="answerText">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-info">
+                            <span class="category-tag" id="categoryTag">General</span>
+                            <span class="difficulty-badge" id="difficultyBadge">Medium</span>
+                        </div>
+
+                        <!-- Controls -->
+                        <div class="study-controls">
+                            <button class="btn-control btn-prev" onclick="previousStudyCard()">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <button class="btn-control btn-flip" onclick="flipCard()">
+                                <i class="fas fa-sync-alt"></i> Flip Card
+                            </button>
+                            <button class="btn-control btn-next" onclick="nextStudyCard()">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section id="quiz-section" class="section">
+            <div class="quiz-container">
+                <!-- Quiz Header -->
+                <div class="quiz-header">
+                    <div class="quiz-progress">
+                        <div class="progress-label">
+                            <span>Question <span id="quizCurrent">1</span> of <span id="quizTotal">10</span></span>
+                            <span id="quizScore">Score: 0</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="quizProgress"></div>
+                        </div>
+                    </div>
+                    <div class="quiz-timer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timerDisplay">0:30</span>
+                    </div>
+                </div>
+
+                <!-- Quiz Question -->
+                <div class="quiz-content">
+                    <h2 id="quizQuestion">Question loading...</h2>
+                    <div class="quiz-options" id="quizOptions">
+                        <!-- Options generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Quiz Controls -->
+                <div class="quiz-actions">
+                    <button class="btn-secondary" onclick="skipQuestion()">
+                        Skip
+                    </button>
+                    <button class="btn-primary" onclick="submitAnswer()" id="submitBtn">
+                        Submit Answer
+                    </button>
+                </div>
+
+                <!-- Quiz Complete Modal -->
+                <div id="quizCompleteModal" class="modal hidden">
+                    <div class="modal-content">
+                        <h2>Quiz Complete!</h2>
+                        <div class="quiz-result">
+                            <div class="result-score">
+                                <span class="score-number" id="finalScore">0</span>
+                                <span class="score-total">/ <span id="quizTotalQuestions">10</span></span>
+                            </div>
+                            <div class="result-message" id="resultMessage"></div>
+                            <div class="result-stats">
+                                <div class="stat">
+                                    <span>Accuracy</span>
+                                    <strong id="finalAccuracy">0%</strong>
+                                </div>
+                                <div class="stat">
+                                    <span>Time Taken</span>
+                                    <strong id="totalTime">0:00</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="restartQuiz()">Take Quiz Again</button>
+                        <button class="btn-secondary" onclick="showSection('home')">Go Home</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MANAGEMENT SECTION -->
+        <section id="management-section" class="section">
+            <div class="management-container">
+                <!-- Header -->
+                <div class="management-header">
+                    <h2>Manage Your Flashcards</h2>
+                    <button class="btn-primary" onclick="openAddCardModal()">
+                        <i class="fas fa-plus"></i> Add New Card
+                    </button>
+                </div>
+
+                <!-- Cards Table/Grid -->
+                <div class="management-filters">
+                    <input 
+                        type="text" 
+                        id="managementSearch" 
+                        class="search-input" 
+                        placeholder="Search cards..."
+                        onkeyup="filterManagementCards()"
+                    >
+                    <select id="managementCategoryFilter" class="select-input" onchange="filterManagementCards()">
+                        <option value="">All Categories</option>
+                    </select>
+                    <button class="btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <button class="btn-secondary" onclick="document.getElementById('importFile').click()">
+                        <i class="fas fa-upload"></i> Import
+                    </button>
+                    <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
+                </div>
+
+                <!-- Cards Display -->
+                <div class="cards-grid" id="cardsGrid">
+                    <!-- Cards loaded by JS -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state hidden">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No cards yet</h3>
+                    <p>Create your first flashcard to get started!</p>
+                    <button class="btn-primary" onclick="openAddCardModal()">
+                        Create Card
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ADD/EDIT CARD MODAL -->
+    <div id="cardModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Card</h2>
+                <button class="close-btn" onclick="closeCardModal()">&times;</button>
+            </div>
+            <form id="cardForm" onsubmit="saveCard(event)">
+                <div class="form-group">
+                    <label for="question">Question</label>
+                    <textarea 
+                        id="question" 
+                        class="form-input" 
+                        placeholder="Enter the question"
+                        required
+                    ></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="answer">Answer</label>
+                    <textarea 
+                        id="answer" 
+                        class="form-input" 
+                        placeholder="Enter the answer"
+                        required
+                    ></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <input 
+                            type="text" 
+                            id="category" 
+                            class="form-input" 
+                            placeholder="e.g., Math, Science"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty">Difficulty</label>
+                        <select id="difficulty" class="form-input">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeCardModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Card</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audio Element for Sound Effects -->
+    <audio id="flipSound">
+        <source src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==" type="audio/wav">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
